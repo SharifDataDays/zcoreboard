@@ -20,14 +20,14 @@ ScoreboardService::ScoreboardService(char *config_file) {
 		Milestone ms;
 		fin >> ms.id;
 		getline(fin, ms.name);
-		this->add_milestone(ms, i);
-
 		fin >> ms.tasks_count;
+		this->add_milestone(ms, i);
 		for (int j = 0; j < ms.tasks_count; ++j) {
 			Task t;
 			fin >> t.id;
+			t.milestone_id = i;
 			getline(fin, t.name);
-			this->add_task(t, i);
+			this->add_task(t);
 		}
 	}
 	
@@ -55,9 +55,13 @@ void ScoreboardService::run() {
 	cerr << "Running :D" << endl;
 }
 
-void ScoreboardService::add_task(Task &task, int milestone_id) {
+void ScoreboardService::add_task(Task &task) {
+	this->tasks_map[task.id] = this->tasks.size();
+	this->tasks.push_back(task);
 }
 
 void ScoreboardService::add_milestone(Milestone &ms, int milestone_id) {
+	this->milestones.push_back(ms);
+	this->milestones_map[ms.id] = milestone_id;
 }
 
