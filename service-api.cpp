@@ -14,13 +14,11 @@
 using namespace std;
 using namespace restbed;
 
-void get_method_handler(const shared_ptr<Session> session)
-{
+void get_method_handler(const shared_ptr<Session> session) {
 	session->close( OK, "Password Protected Hello, World!", { { "Content-Length", "32" } } );
 }
 
-void add_milestone_handler(const shared_ptr<Session> session)
-{
+void add_milestone_handler(const shared_ptr<Session> session) {
 	auto request = session->get_request();
 	size_t request_content_length = stoi(request->get_header("Content-Length", "0"));
 	session->fetch(request_content_length, [request](const std::shared_ptr<restbed::Session> session, const restbed::Bytes & body)
@@ -36,6 +34,7 @@ void add_milestone_handler(const shared_ptr<Session> session)
 			Milestone ms;
 			ms.id = root["ms_id"].asInt();
 			ms.name = root["ms_name"].asString();
+			ms.tasks_count = 0;
 			cout << ms.id << ' ' << ms.name << endl;
 			ScoreboardService::getInstance()->add_milestone(ms);
 			return session->close(OK, "Done!", {{"Content-Length", "5"}});
@@ -43,9 +42,29 @@ void add_milestone_handler(const shared_ptr<Session> session)
 			);
 }
 
-void add_task_handler(const shared_ptr<Session> session)
-{
-	session->close( OK, "Pishword Protected Hello, World!", { { "Content-Length", "32" } } );
+void add_task_handler(const shared_ptr<Session> session) {
+	auto request = session->get_request();
+	size_t request_content_length = stoi(request->get_header("Content-Length", "0"));
+	session->fetch(request_content_length, [request](const std::shared_ptr<restbed::Session> session, const restbed::Bytes & body)
+			{
+			string data = string((char*)body.data(), body.size());
+			Json::Reader reader;
+			Json::Value root;
+			if (!reader.parse(data, root)) {
+				session->close(UNPROCESSABLE_ENTITY, "Bad input :(", {{"Content-Length", "12"}});
+				return;
+			}
+
+			auto ss = ScoreboardService::getInstance();
+			Task task;
+			task.id = root["task_id"].asInt();
+			task.name = root["task_name"].asString();
+			task.milestone_id = ss->milestones_map[root["ms_id"].asInt()];
+			cout << task.id << ' ' << task.name << ' ' << task.milestone_id << endl;
+			ss->add_task(task);
+			return session->close(OK, "Done!", {{"Content-Length", "5"}});
+			}
+			);
 }
 
 void update_score_handler(const shared_ptr<Session> session)
@@ -55,16 +74,37 @@ void update_score_handler(const shared_ptr<Session> session)
 
 void view_scoreboard_handler(const shared_ptr<Session> session)
 {
-	auto request = session->get_request();
-	std::string key = request->get_path_parameter("mag");
-	std::string data = "haha";
-	std::cout << key << " => " << data << std::endl;
-	session->close(restbed::OK, data, { { "Content-Length", std::to_string(data.size()) } });
+	auto req = session->get_request();
+	int start_index = stoi(req->get_query_parameter("start_index"));
+	int end_index = stoi(req->get_query_parameter("end_index"));
+	string ms_str = req->get_query_parameter("ms_id");
+
+	auto ss = ScoreboardService::getInstance();
+	string result;
+	if (end_index - start_index > MAX_SCOREBOARD_PAGE_SIZE) {
+		session->close(BAD_REQUEST, "Bazeh be in bozorgi? Gandesho dar avordi!", {{"Content-Length", "41"}});
+		return;
+	}
+	if (ms_str == "") {
+		result = ss->get_scoreboard(start_index, end_index, -1);
+	else
+		result = ss->get_scoreboard(start_index, end_index, stoi(ms_str));
+	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
 
 void team_score_handler(const shared_ptr<Session> session)
 {
-	session->close( OK, "Pishword Protected Hello, World!", { { "Content-Length", "32" } } );
+	auto req = session->get_request();
+	int team_id = stoi(req->get_query_parameter("team_id"));
+	string ms_str = req->get_query_parameter("ms_id");
+
+	auto ss = ScoreboardService::getInstance();
+	string result;
+	if (ms_str == "") {
+		result = ss->get_team_info(team_id, -1);
+	else
+		result = ss->get_team_info(team_id, stoi(ms_str));
+	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
 
 void ScoreboardService::run() {
