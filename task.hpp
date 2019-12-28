@@ -8,7 +8,7 @@ using namespace std;
 struct Task {
 	int id;
 	string name;
-	int milestone_id;
+	vector<int> milestones;
 };
 
 #endif

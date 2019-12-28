@@ -5,6 +5,7 @@
 #include <vector>
 #include "task.hpp"
 #include "milestone.hpp"
+#include "scoreboard.hpp"
 
 class ScoreboardService {
 	private:
@@ -17,14 +18,19 @@ class ScoreboardService {
 			tasks_map;
 		vector<Task> tasks;
 		vector<Milestone> milestones;
+		vector<Scoreboard> milestone_scoreboards;
+		Scoreboard general_scoreboard;
 
 		static ScoreboardService* getInstance();
 		static ScoreboardService* getInstance(char *config_file);
 
 		void run();
 
-		void add_task(Task &task);
-		void add_milestone(Milestone &ms);
+		int add_task(Task &task);
+		int add_milestone(Milestone &ms);
+		void add_task_to_milestone(int task_id, int milestone_id);
+		int add_team(string team_name);
+		void update_score(string team_name, int task_id, int new_score);
 };
 
 #endif

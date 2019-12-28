@@ -51,15 +51,36 @@ ScoreboardService* ScoreboardService::getInstance(char *config_file) {
 	return instance;
 }
 
-void ScoreboardService::add_task(Task &task) {
+int ScoreboardService::add_task(Task &task) {
 	assert(this->tasks_map.count(task.id) == 0);
-	this->tasks_map[task.id] = this->tasks.size();
+	int tid = this->tasks.size();
+	this->tasks_map[task.id] = tid;
 	this->tasks.push_back(task);
+	return tid;
 }
 
-void ScoreboardService::add_milestone(Milestone &ms) {
+int ScoreboardService::add_milestone(Milestone &ms) {
 	assert(this->milestones_map.count(ms.id) == 0);
-	this->milestones_map[ms.id] = this->milestones.size();
+	int msid = this->milestones.size();
+	this->milestones_map[ms.id] = msid;
 	this->milestones.push_back(ms);
+	return msid;
+}
+
+void ScoreboardService::add_task_to_milestone(int task_id, int milestone_id) {
+	assert(this->tasks_map.count(task_id) != 0);
+	assert(this->milestones_map.count(milestone_id) != 0);
+	task_id = this->tasks_map[task_id];
+	milestone_id = this->milestones_map[milestone_id];
+	this->tasks[task_id].milestones.push_back(milestone_id);
+	this->milestones[milestone_id].tasks.push_back(task_id);
+}
+
+void ScoreboardService::update_score(string team_name, int task_id, int new_score) {
+	int team_id = this->add_team(team_name, true);
+	task_id = this->tasks_map[task_id];
+	// remove team from scoreboards
+	// update team's score
+	// insert team to scoreboards
 }
 
