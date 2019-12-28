@@ -52,11 +52,13 @@ ScoreboardService* ScoreboardService::getInstance(char *config_file) {
 }
 
 void ScoreboardService::add_task(Task &task) {
+	assert(this->tasks_map.count(task.id) == 0);
 	this->tasks_map[task.id] = this->tasks.size();
 	this->tasks.push_back(task);
 }
 
 void ScoreboardService::add_milestone(Milestone &ms) {
+	assert(this->milestones_map.count(ms.id) == 0);
 	this->milestones_map[ms.id] = this->milestones.size();
 	this->milestones.push_back(ms);
 }
