@@ -24,7 +24,7 @@ class ScoreboardService {
 		void run();
 
 		void add_task(Task &task);
-		void add_milestone(Milestone &ms, int milestone_id);
+		void add_milestone(Milestone &ms);
 };
 
 #endif
