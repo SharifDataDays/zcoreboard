@@ -35,7 +35,6 @@ void add_milestone_handler(const shared_ptr<Session> session) {
 			Milestone ms;
 			ms.id = root["ms_id"].asInt();
 			ms.name = root["ms_name"].asString();
-			cout << ms.id << ' ' << ms.name << endl;
 			ScoreboardService::getInstance()->add_milestone(ms);
 			return session->close(OK, "Done!", {{"Content-Length", "5"}});
 			}
@@ -59,7 +58,6 @@ void add_task_handler(const shared_ptr<Session> session) {
 			Task task;
 			task.id = root["task_id"].asInt();
 			task.name = root["task_name"].asString();
-			cout << task.id << ' ' << task.name << endl;
 			ss->add_task(task);
 			return session->close(OK, "Done!", {{"Content-Length", "5"}});
 			}
@@ -117,7 +115,7 @@ void view_scoreboard_handler(const shared_ptr<Session> session)
 	auto req = session->get_request();
 	int start_index = stoi(req->get_query_parameter("start_index"));
 	int end_index = stoi(req->get_query_parameter("end_index"));
-	string ms_str = req->get_query_parameter("ms_id");
+	int ms_id = stoi(req->get_query_parameter("ms_id"));
 
 	auto ss = ScoreboardService::getInstance();
 	string result;
@@ -125,10 +123,7 @@ void view_scoreboard_handler(const shared_ptr<Session> session)
 		session->close(BAD_REQUEST, "Bazeh be in bozorgi? Gandesho dar avordi!", {{"Content-Length", "41"}});
 		return;
 	}
-	if (ms_str == "")
-		result = ss->get_scoreboard(start_index, end_index, -1);
-	else
-		result = ss->get_scoreboard(start_index, end_index, stoi(ms_str));
+	result = ss->get_scoreboard(start_index, end_index, ms_id);
 	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
 
