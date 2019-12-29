@@ -24,8 +24,10 @@ void Scoreboard::reset_order(void) {
 }
 
 vector<int> Scoreboard::get_by_rank(int start_index, int end_index) {
-	// TODO complete here
-	return vector<int>(10);
+	end_index = min(end_index, this->teams.size());
+	if (end_index <= start_index or start_index >= this->teams.size())
+		return vector<int>();
+	return vector<int>(this->teams.begin() + start_index, this->teams.begin() + end_index);
 }
 
 int Scoreboard::get_team_rank(int team_id) {
