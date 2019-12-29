@@ -18,6 +18,7 @@ public:
 	void remove(int team_id);
 	void insert(int team_id);
 	void reset_order(void);
+	vector<int> get_by_rank(int start_index, int end_index);
 
 };
 

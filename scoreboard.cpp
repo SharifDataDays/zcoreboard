@@ -23,3 +23,8 @@ void Scoreboard::reset_order(void) {
 	sort(this->teams.begin(), this->teams.end(), [&scores](int i, int j) { return scores[i] > scores[j];});
 }
 
+vector<int> Scoreboard::get_by_rank(int start_index, int end_index) {
+	// TODO complete here
+	return vector<int>(10);
+}
+

@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <assert.h>
+#include <sstream>
+#include <jsoncpp/json/json.h>
 #include "service.hpp"
 #include "task.hpp"
 #include "milestone.hpp"
@@ -118,10 +120,32 @@ void ScoreboardService::update_score(string team_name, int task_id, float new_sc
 }
 
 string ScoreboardService::get_scoreboard(int start_index, int end_index, int milestone_id) {
-	return "Currently failed :D";
+	milestone_id = this->milestones_map[milestone_id];
+	vector<int> teams = this->scoreboards[milestone_id].get_by_rank(start_index - 1, end_index);
+	Json::Value root;
+	root["milestone"]["name"] = this->milestones[milestone_id].name;
+	root["milestone"]["id"] = this->milestones[milestone_id].id;
+	for (int i = 0; i < this->milestones[milestone_id].tasks.size(); ++i) {
+		auto &task = this->tasks[this->milestones[milestone_id].tasks[i]];
+		Json::Value current_task;
+		current_task["id"] = task.id;
+		current_task["name"] = task.name;
+		root["tasks"][i] = current_task;
+	}
+	for (int i = 0; i < teams.size(); ++i) {
+		Json::Value current_team;
+		current_team["rank"] = start_index + i;
+		int tid = teams[i];
+		current_team["name"] = this->teams[tid];
+		for (int j = 0; j < this->milestones[milestone_id].tasks.size(); ++j) {
+			auto &task = this->milestones[milestone_id].tasks[j];
+			current_team["task_scores"][j] = this->tasks_scores[tid][j]; 
+		}
+		root["scoreboard"][i] = current_team;
+	}
+	return Json::FastWriter().write(root);
 }
 
 string ScoreboardService::get_team_info(string team_name, int milestone_id) {
-	return "Currently failed :D";
 }
 
