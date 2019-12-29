@@ -18,8 +18,8 @@ class ScoreboardService {
 			tasks_map;
 		vector<Task> tasks;
 		vector<Milestone> milestones;
-		vector<Scoreboard> milestone_scoreboards;
-		Scoreboard general_scoreboard;
+		vector<vector<float> > tasks_scores;
+		vector<Scoreboard> scoreboards;
 
 		static ScoreboardService* getInstance();
 		static ScoreboardService* getInstance(char *config_file);
@@ -29,7 +29,7 @@ class ScoreboardService {
 		int add_task(Task &task);
 		int add_milestone(Milestone &ms);
 		void add_task_to_milestone(int task_id, int milestone_id);
-		int add_team(string team_name);
+		int get_team_id(string team_name, bool create);
 		void update_score(string team_name, int task_id, int new_score);
 };
 
