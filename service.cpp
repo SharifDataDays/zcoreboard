@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <assert.h>
 #include "service.hpp"
 #include "task.hpp"
 #include "milestone.hpp"
@@ -13,30 +14,30 @@ ScoreboardService::ScoreboardService() {
 }
 
 ScoreboardService::ScoreboardService(char *config_file) {
-	ifstream fin(config_file);
-	int n;
-	fin >> n;
-	for (int i = 0; i < n; ++i) {
-		Milestone ms;
-		fin >> ms.id;
-		getline(fin, ms.name);
-		fin >> ms.tasks_count;
-		this->add_milestone(ms);
-		for (int j = 0; j < ms.tasks_count; ++j) {
-			Task t;
-			fin >> t.id;
-			t.milestone_id = i;
-			getline(fin, t.name);
-			this->add_task(t);
-		}
-	}
-	
-	int updates;
-	fin >> updates;
-	for (int i = 0; i < updates; i++) {
-		//TODO continue this part
-	}
-	fin.close();
+	//	ifstream fin(config_file);
+	//	int n;
+	//	fin >> n;
+	//	for (int i = 0; i < n; ++i) {
+	//		Milestone ms;
+	//		fin >> ms.id;
+	//		getline(fin, ms.name);
+	//		fin >> ms.tasks_count;
+	//		this->add_milestone(ms);
+	//		for (int j = 0; j < ms.tasks_count; ++j) {
+	//			Task t;
+	//			fin >> t.id;
+	//			t.milestone_id = i;
+	//			getline(fin, t.name);
+	//			this->add_task(t);
+	//		}
+	//	}
+	//	
+	//	int updates;
+	//	fin >> updates;
+	//	for (int i = 0; i < updates; i++) {
+	//		//TODO continue this part
+	//	}
+	//	fin.close();
 }
 
 ScoreboardService* ScoreboardService::getInstance() {
@@ -83,13 +84,15 @@ void ScoreboardService::add_task_to_milestone(int task_id, int milestone_id) {
 }
 
 int ScoreboardService::add_team(string team_name) {
-	team_id = this->teams.size();
+	int team_id = this->teams.size();
 	this->teams.push_back(team_name);
 	this->teams_map[team_name] = team_id;
-	
+
 	this->tasks_scores.push_back(vector<float>(this->tasks.size()));
-	for (int i = 0; i < this->milestones.size(); ++i)
+	for (int i = 0; i < this->milestones.size(); ++i) {
 		this->scoreboards[i].scores.push_back(0);
+		this->scoreboards[i].insert(team_id);
+	}
 
 	return team_id;
 }
@@ -107,10 +110,18 @@ void ScoreboardService::update_score(string team_name, int task_id, float new_sc
 	task_id = this->tasks_map[task_id];
 	float score_diff = new_score - this->tasks_scores[team_id][task_id];
 	for (int ms_id : this->tasks[task_id].milestones) {
-		this->scoreboards[ms_id].erase(team_id);
+		this->scoreboards[ms_id].remove(team_id);
 		this->scoreboards[ms_id].scores[team_id] += score_diff;
 		this->scoreboards[ms_id].insert(team_id);
 	}
 	this->tasks_scores[team_id][task_id] = new_score;
+}
+
+string ScoreboardService::get_scoreboard(int start_index, int end_index, int milestone_id) {
+	return "Currently failed :D";
+}
+
+string ScoreboardService::get_team_info(string team_name, int milestone_id) {
+	return "Currently failed :D";
 }
 

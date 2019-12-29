@@ -10,6 +10,7 @@
 #include "milestone.hpp"
 
 #define PORT 8080
+#define MAX_SCOREBOARD_PAGE_SIZE 50
 
 using namespace std;
 using namespace restbed;
@@ -80,7 +81,7 @@ void add_task_to_milestone_handler(const shared_ptr<Session> session) {
 
 			auto ss = ScoreboardService::getInstance();
 			int task_id = root["task_id"].asInt();
-			int ms_id = root["ms_id"].asString();
+			int milestone_id = root["ms_id"].asInt();
 			ss->add_task_to_milestone(task_id, milestone_id);
 			return session->close(OK, "Done!", {{"Content-Length", "5"}});
 			}
@@ -124,7 +125,7 @@ void view_scoreboard_handler(const shared_ptr<Session> session)
 		session->close(BAD_REQUEST, "Bazeh be in bozorgi? Gandesho dar avordi!", {{"Content-Length", "41"}});
 		return;
 	}
-	if (ms_str == "") {
+	if (ms_str == "")
 		result = ss->get_scoreboard(start_index, end_index, -1);
 	else
 		result = ss->get_scoreboard(start_index, end_index, stoi(ms_str));
@@ -134,15 +135,15 @@ void view_scoreboard_handler(const shared_ptr<Session> session)
 void team_score_handler(const shared_ptr<Session> session)
 {
 	auto req = session->get_request();
-	int team_id = stoi(req->get_query_parameter("team_id"));
+	string team_name = req->get_query_parameter("team_name");
 	string ms_str = req->get_query_parameter("ms_id");
 
 	auto ss = ScoreboardService::getInstance();
 	string result;
-	if (ms_str == "") {
-		result = ss->get_team_info(team_id, -1);
+	if (ms_str == "")
+		result = ss->get_team_info(team_name, -1);
 	else
-		result = ss->get_team_info(team_id, stoi(ms_str));
+		result = ss->get_team_info(team_name, stoi(ms_str));
 	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
 
