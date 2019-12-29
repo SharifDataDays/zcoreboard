@@ -139,7 +139,7 @@ string ScoreboardService::get_scoreboard(int start_index, int end_index, int mil
 		current_team["name"] = this->teams[tid];
 		for (int j = 0; j < this->milestones[milestone_id].tasks.size(); ++j) {
 			auto &task = this->milestones[milestone_id].tasks[j];
-			current_team["task_scores"][j] = this->tasks_scores[tid][j]; 
+			current_team["scores"][j] = this->tasks_scores[tid][j]; 
 		}
 		root["scoreboard"][i] = current_team;
 	}
@@ -147,5 +147,21 @@ string ScoreboardService::get_scoreboard(int start_index, int end_index, int mil
 }
 
 string ScoreboardService::get_team_info(string team_name, int milestone_id) {
+	milestone_id = this->milestones_map[milestone_id];
+	int team_id = this->teams_map[team_name];
+	auto &milestone = this->milestones[milestone_id];
+	Json::Value root;
+	root["milestone"]["name"] = this->milestones[milestone_id].name;
+	root["milestone"]["id"] = this->milestones[milestone_id].id;
+	for (int i = 0; i < milestone.tasks.size(); ++i) {
+		auto &task = this->tasks[milestone.tasks[i]];
+		Json::Value current_task;
+		current_task["id"] = task.id;
+		current_task["name"] = task.name;
+		root["tasks"][i] = current_task;
+		root["scores"][i] = this->tasks_scores[team_id][milestone.tasks[i]];
+	}
+	root["rank"] = 1 + this->scoreboards[milestone_id].get_team_rank(team_id);
+	return Json::FastWriter().write(root);
 }
 

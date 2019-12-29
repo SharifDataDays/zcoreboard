@@ -28,3 +28,10 @@ vector<int> Scoreboard::get_by_rank(int start_index, int end_index) {
 	return vector<int>(10);
 }
 
+int Scoreboard::get_team_rank(int team_id) {
+	for (int i = 0; i < this->teams.size(); ++i)
+		if (this->scores[this->teams[i]] == this->scores[team_id])
+			return i;
+	return -1;
+}
+
