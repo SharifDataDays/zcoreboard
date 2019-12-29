@@ -111,5 +111,6 @@ void ScoreboardService::update_score(string team_name, int task_id, float new_sc
 		this->scoreboards[ms_id].scores[team_id] += score_diff;
 		this->scoreboards[ms_id].insert(team_id);
 	}
+	this->tasks_scores[team_id][task_id] = new_score;
 }
 
