@@ -1,3 +1,6 @@
+#ifndef ERRORS_H
+#define ERRORS_H
+
 class BaseError {
 public:
 	uint16_t status;
@@ -48,4 +51,6 @@ public:
 		details = "requested range is too large";
 	}
 };
+
+#endif
 
