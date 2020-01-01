@@ -8,6 +8,7 @@
 #include <jsoncpp/json/json.h>
 
 #include "milestone.hpp"
+#include "errors.hpp"
 
 #define PORT 8080
 #define MAX_SCOREBOARD_PAGE_SIZE 50
@@ -119,10 +120,8 @@ void view_scoreboard_handler(const shared_ptr<Session> session)
 
 	auto ss = ScoreboardService::getInstance();
 	string result;
-	if (end_index - start_index > MAX_SCOREBOARD_PAGE_SIZE) {
-		session->close(BAD_REQUEST, "Bazeh be in bozorgi? Gandesho dar avordi!", {{"Content-Length", "41"}});
-		return;
-	}
+	if (end_index - start_index > MAX_SCOREBOARD_PAGE_SIZE)
+		throw LongRangeError();
 	result = ss->get_scoreboard(start_index, end_index, ms_id);
 	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
@@ -142,7 +141,29 @@ void team_score_handler(const shared_ptr<Session> session)
 	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
 
-void ScoreboardService::run() {
+void error_handler(const int, const exception& e, const shared_ptr<Session> session)
+{
+	if (session->is_closed())
+		return;
+	const BaseError *err = dynamic_cast<const BaseError*>(&e);
+	int status;
+	const char* message;
+	if (err == nullptr)
+		status = 500, message = InternalServerError().details;
+	else
+		status = err->status, message = err->details;
+	Json::Value result;
+	result["status_code"] = status;
+	result["details"] = string(message);
+
+	Json::FastWriter writer;
+	string result_string = writer.write(result);
+
+	session->close(OK, result_string, {{"Content-Length", to_string(result_string.size())}, {"Content-Type", "application/json"}});
+}
+
+void ScoreboardService::run()
+{
 	auto add_ms = make_shared<Resource>();
 	add_ms->set_path("/add_ms");
 	add_ms->set_method_handler("POST", add_milestone_handler);
@@ -178,6 +199,8 @@ void ScoreboardService::run() {
 	service.publish(update_score);
 	service.publish(view_scoreboard);
 	service.publish(team_score);
+
+	service.set_error_handler(error_handler);
 
 	service.start(settings);
 
