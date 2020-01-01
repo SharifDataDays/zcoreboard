@@ -1,10 +1,16 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-class BaseError {
+#include <exception>
+
+class BaseError : public std::exception {
 public:
 	uint16_t status;
-	std::string details;
+	const char* details;
+	const char* what()
+	{
+		return details;
+	}
 };
 
 class TaskNotFoundError : public BaseError {
@@ -22,6 +28,15 @@ public:
 	{
 		status = 404;
 		details = "milestone not found";
+	}
+};
+
+class TeamNotFoundError : public BaseError {
+	public:
+	TeamNotFoundError()
+	{
+		status = 404;
+		details = "team not found";
 	}
 };
 
@@ -49,6 +64,15 @@ public:
 	{
 		status = 400;
 		details = "requested range is too large";
+	}
+};
+
+class InternalServerError : public BaseError {
+public:
+	InternalServerError()
+	{
+		status = 500;
+		details = "internal server error";
 	}
 };
 

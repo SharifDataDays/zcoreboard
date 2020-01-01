@@ -32,11 +32,14 @@ class ScoreboardService {
 		int add_milestone(Milestone &ms);
 		void add_task_to_milestone(int task_id, int milestone_id);
 		int add_team(string team_name);
-		int get_team_id(string team_name, bool create);
 		void update_score(string team_name, int task_id, float new_score);
 
 		string get_scoreboard(int start_index, int end_index, int milestone_id);
 		string get_team_info(string team_name, int milestone_id);
+
+		int get_team_id(string team_name, bool create);
+		int get_milestone_id(int ms_id);
+		int get_task_id(int task_id);
 };
 
 #endif
