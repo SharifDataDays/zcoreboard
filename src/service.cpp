@@ -134,9 +134,10 @@ string ScoreboardService::get_scoreboard(int start_index, int end_index, int mil
 		root["tasks"][i] = current_task;
 	}
 	for (int i = 0; i < teams.size(); ++i) {
+		int tid = teams[i];
 		Json::Value current_team;
 		current_team["rank"] = start_index + i;
-		int tid = teams[i];
+		current_team["total_score"] = this->scoreboards[milestone_id].scores[tid];
 		current_team["name"] = this->teams[tid];
 		for (int j = 0; j < this->milestones[milestone_id].tasks.size(); ++j) {
 			auto &task = this->milestones[milestone_id].tasks[j];
