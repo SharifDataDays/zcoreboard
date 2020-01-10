@@ -7,6 +7,7 @@
 #include "task.hpp"
 #include "milestone.hpp"
 #include "errors.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -139,7 +140,7 @@ string ScoreboardService::get_scoreboard(int start_index, int end_index, int mil
 		current_team["name"] = this->teams[tid];
 		for (int j = 0; j < this->milestones[milestone_id].tasks.size(); ++j) {
 			auto &task = this->milestones[milestone_id].tasks[j];
-			current_team["scores"][j] = this->tasks_scores[tid][j]; 
+			current_team["scores"][j] = score_to_string(this->tasks_scores[tid][j]);
 		}
 		root["scoreboard"][i] = current_team;
 	}
