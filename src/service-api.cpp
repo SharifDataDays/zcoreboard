@@ -10,7 +10,7 @@
 #include "milestone.hpp"
 #include "errors.hpp"
 
-#define PORT 8080
+#define PORT 8000
 #define MAX_SCOREBOARD_PAGE_SIZE 50
 
 using namespace std;
@@ -148,7 +148,7 @@ void milestone_info_handler(const shared_ptr<Session> session) {
 	result["teams_count"] = ScoreboardService::getInstance()->get_teams_count(ms_id);
 	Json::FastWriter writer;
 	string result_string = writer.write(result);
-	session->close(OK, result_string, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
+	session->close(OK, result_string, {{"Content-Length", to_string(result_string.size())}, {"Content-Type", "application/json"}});
 }
 
 void error_handler(const int, const exception& e, const shared_ptr<Session> session)
@@ -213,6 +213,7 @@ void ScoreboardService::run()
 	service.publish(update_score);
 	service.publish(view_scoreboard);
 	service.publish(team_score);
+    service.publish(milestone_info);
 
 	service.set_error_handler(error_handler);
 
