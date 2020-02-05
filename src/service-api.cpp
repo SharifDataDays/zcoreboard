@@ -141,6 +141,16 @@ void team_score_handler(const shared_ptr<Session> session)
 	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
 }
 
+void milestone_info_handler(const shared_ptr<Session> session) {
+	auto req = session->get_request();
+	int ms_id = stoi(req->get_query_parameter("ms_id"));
+	Json::Value result;
+	result["teams_count"] = ScoreboardService::getInstance()->get_teams_count(ms_id);
+	Json::FastWriter writer;
+	string result_string = writer.write(result);
+	session->close(OK, result_string, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
+}
+
 void error_handler(const int, const exception& e, const shared_ptr<Session> session)
 {
 	if (session->is_closed())
@@ -187,6 +197,10 @@ void ScoreboardService::run()
 	auto team_score = make_shared<Resource>();
 	team_score->set_path("/team_score");
 	team_score->set_method_handler("GET", team_score_handler);
+
+	auto milestone_info = make_shared<Resource>();
+	milestone_info->set_path("/milestone_info");
+	milestone_info->set_method_handler("GET", milestone_info_handler);
 
 	auto settings = make_shared<Settings>();
 	settings->set_port(PORT);
