@@ -167,6 +167,10 @@ string ScoreboardService::get_team_info(string team_name, int milestone_id) {
 	return Json::FastWriter().write(root);
 }
 
+int ScoreboardService::get_teams_count(int ms_id) {
+	return this->teams.size();
+}
+
 int ScoreboardService::get_milestone_id(int ms_id) {
 	if (this->milestones_map.count(ms_id) == 0)
 		throw MilestoneNotFoundError();

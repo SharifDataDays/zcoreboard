@@ -36,6 +36,7 @@ class ScoreboardService {
 
 		string get_scoreboard(int start_index, int end_index, int milestone_id);
 		string get_team_info(string team_name, int milestone_id);
+		int get_teams_count(int ms_id);
 
 		int get_team_id(string team_name, bool create);
 		int get_milestone_id(int ms_id);
