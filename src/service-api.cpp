@@ -10,9 +10,6 @@
 #include "milestone.hpp"
 #include "errors.hpp"
 
-#define PORT 8000
-#define MAX_SCOREBOARD_PAGE_SIZE 50
-
 using namespace std;
 using namespace restbed;
 
@@ -120,7 +117,7 @@ void view_scoreboard_handler(const shared_ptr<Session> session)
 
 	auto ss = ScoreboardService::getInstance();
 	string result;
-	if (end_index - start_index > MAX_SCOREBOARD_PAGE_SIZE)
+	if (end_index - start_index > atoi(getenv("MAX_SCOREBOARD_PAGE_SIZE")))
 		throw LongRangeError();
 	result = ss->get_scoreboard(start_index, end_index, ms_id);
 	session->close(OK, result, {{"Content-Length", to_string(result.size())}, {"Content-Type", "application/json"}});
@@ -203,7 +200,7 @@ void ScoreboardService::run()
 	milestone_info->set_method_handler("GET", milestone_info_handler);
 
 	auto settings = make_shared<Settings>();
-	settings->set_port(PORT);
+	settings->set_port(atoi(getenv("PORT")));
 	settings->set_default_header("Connection", "close");
 
 	Service service;
