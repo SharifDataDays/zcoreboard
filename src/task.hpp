@@ -9,6 +9,9 @@ struct Task {
 	int id;
 	string name;
 	vector<int> milestones;
+
+	Json::value as_json();
+
 };
 
 #endif
