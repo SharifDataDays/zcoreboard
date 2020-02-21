@@ -2,25 +2,44 @@
 #define SCOREBOARD_H
 
 #include <vector>
+#include <map>
+#include <string>
+#include <jsoncpp/json/json.h>
+
+#include "milestone.hpp"
 
 using namespace std;
 
 #define POOL_CAPACITY 200
 
 class Scoreboard {
-private:
-	vector<int> teams;
-
 public:
-	vector<float> scores;
+	vector<float> total_scores;
+	map<string, int> teams_map;
+	vector<string> teams;
+	map<int, int> tasks_map;
+	vector<int> tasks;
+	vector<vector<float> > tasks_scores;
+	vector<int> order;
+	Milestone milestone;
 
-	Scoreboard(int teams_count);
-	void remove(int team_id);
-	void insert(int team_id);
+	Scoreboard(Milestone &);
+
+	void remove(int);
+	void insert(int);
 	void reset_order(void);
-	vector<int> get_by_rank(int start_index, int end_index);
-	int get_team_rank(int team_id);
+	
+	int get_team_rank(int);
+	int get_team_id(string, bool);
+	int add_team(string);
+	float get_score(int, int);
+	int get_task_id(int);
+	int get_teams_count(void);
+	void add_task(int);
 
+	void update_score(string, int, float);
+	Json::Value get_team_info(string);
+	Json::Value get_scoreboard(int, int);
 };
 
 #endif
