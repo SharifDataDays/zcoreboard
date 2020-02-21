@@ -16,12 +16,8 @@ class ScoreboardService {
 	public:
 		map<int, int> milestones_map,
 			tasks_map;
-		map<string, int> teams_map;
 		vector<Task> tasks;
-		vector<Milestone> milestones;
-		vector<vector<float> > tasks_scores;
 		vector<Scoreboard> scoreboards;
-		vector<string> teams;
 
 		static ScoreboardService* getInstance();
 		static ScoreboardService* getInstance(char *config_file);
