@@ -9,7 +9,7 @@ public:
 	Task *task;
 
 	TaskSerializer(Task *task);
-	Json::Value parse();
+	Json::Value serialize();
 };
 
 #endif

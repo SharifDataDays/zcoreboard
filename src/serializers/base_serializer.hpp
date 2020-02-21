@@ -5,7 +5,7 @@
 
 class BaseSerializer {
 public:
-	virtual Json::Value parse() = 0;
+	virtual Json::Value serialize() = 0;
 };
 
 #endif
