@@ -5,7 +5,7 @@ project(Zcoreboard VERSION 0.1)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-file(GLOB_RECURSE SOURCE "src/*.cpp" "src/*.hpp")
+file(GLOB_RECURSE SOURCE "src/serializers/*.cpp" "src/serializers/*.hpp" "src/*.cpp" "src/*.hpp")
 add_executable(Zcoreboard "${SOURCE}")
 
 target_link_libraries(Zcoreboard
